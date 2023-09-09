@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
-import org.w3c.dom.Node;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -51,7 +51,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 	
 	@SneakyThrows
 	public JsonObjectBuilder withExistingJsonFilePath(String jsonFileName) {
-		if(jsonFileName.isBlank() || Objects.isNull(jsonFileName))
+		if(jsonFileName.isBlank())
 			throw new RuntimeException("Blank or Empty or Null value for JsonFileName. Please chekc json file name.");
 		
 		this.rootObjectNode = (ObjectNode) MAPPER.readTree(new File(jsonFileName));
@@ -118,7 +118,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 	}
 	
 	public JsonObjectBuilder appendJsonWithValue(String jsonNodePath, Object value, String dataTypeOfValue) {
-		if(!isSkippable(value)) {
+		if(isSkippable(value)) {
 			jsonNodePath = convertJsonNodePathWithSlashSeparator(jsonNodePath);
 			jsonPathValueMapToAppend.put(jsonNodePath, convertValueOfRequiredDataType(value, dataTypeOfValue));
 		}
@@ -126,7 +126,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 	}
 	
 	public JsonObjectBuilder appendJsonWithValue(String jsonNodePath, Object value) {
-		if(!isSkippable(value)) {
+		if(isSkippable(value)) {
 			jsonNodePath = convertJsonNodePathWithSlashSeparator(jsonNodePath);
 			jsonPathValueMapToAppend.put(jsonNodePath, convertValueOfRequiredDataType(value, "Text"));
 		}
@@ -184,14 +184,13 @@ public class JsonObjectBuilder implements JsonBuilders {
 		jsonNodePath = convertJsonNodePathWithSlashSeparator(jsonNodePath);
 		return (T) oMapper.treeToValue(rootObjectNode.at(jsonNodePath), classType);
 	}
-	
+
 	private boolean isSkippable(Object value) {
 		if(Objects.nonNull(value)) {
 			String stringValue = String.valueOf(value);
-			if(stringValue.equalsIgnoreCase(NodeValueType.SKIP.getType()) || stringValue.equalsIgnoreCase(NodeValueType.IGNORE.getType()))
-				return true;
+			return stringValue.equalsIgnoreCase(NodeValueType.SKIP.getType()) || stringValue.equalsIgnoreCase(NodeValueType.IGNORE.getType());
 		}
-		
+
 		return false;
 	}
 	
@@ -247,7 +246,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 		
 		if(parentNode.isArray()) {
 			ArrayNode arrayNode = (ArrayNode) parentNode;
-			int index = Integer.valueOf(fieldName);
+			int index = Integer.parseInt(fieldName);
 			// Expand array in case index is greater than array size
 			for (int i = arrayNode.size() ; i <= index ; i ++) {
 				arrayNode.addObject();
@@ -272,7 +271,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 		
 		if(parentNode.isArray()) {
 			ArrayNode arrayNode = (ArrayNode) parentNode;
-			int index = Integer.valueOf(fieldName);
+			int index = Integer.parseInt(fieldName);
 			arrayNode.remove(index);
 		} else if(parentNode.isObject()) {
 			( (ObjectNode) parentNode).remove(fieldName);
@@ -338,6 +337,7 @@ public class JsonObjectBuilder implements JsonBuilders {
 			return new TextNode(stringValue);
 	}
 	
+	@Getter
 	public enum NodeValueType {
 		NUMBER("Number"),
 		INT("Int"),
@@ -359,16 +359,12 @@ public class JsonObjectBuilder implements JsonBuilders {
 		SKIP("Skip"),
 		IGNORE("Ignore");
 		
-		private String type;
+		private final String type;
 		
 		NodeValueType(String type) {
 			this.type = type;
 		}
-		
-		public String getType() {
-			return type;
-		}
-		
+
 	}
 	
 }
