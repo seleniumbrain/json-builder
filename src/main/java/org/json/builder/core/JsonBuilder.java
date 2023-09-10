@@ -40,7 +40,7 @@ public interface JsonBuilder {
 
     JsonBuilder fromJsonString(String json);
 
-    JsonBuilder withEmptyJsonObject();
+    JsonBuilder withEmptyNode();
 
     JsonBuilder append(String jsonNodePath, Object value, String dataTypeOfValue);
 

@@ -4,19 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="89d09cca-2b5b-4e95-8e54-b9840184becb" name="Changes" comment="initial commit - with base classes">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/BuilderFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonArrayBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonObjectBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/NodeValueType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/exception/JsonBuilderException.java" afterDir="false" />
+    <list default="true" id="89d09cca-2b5b-4e95-8e54-b9840184becb" name="Changes" comment="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/JsonArrayBuilder.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/JsonBuilders.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/JsonObjectBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonArrayBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonArrayBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonObjectBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonObjectBuilder.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,6 +59,9 @@
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/org/json/builder" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="org.json.builder" />
     </key>
   </component>
   <component name="RunManager">
@@ -132,13 +127,22 @@
       <option name="project" value="LOCAL" />
       <updated>1694272031861</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory">
+      <option name="closed" value="true" />
+      <created>1694370823308</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1694370823308</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="initial commit - with base classes" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit - with base classes" />
+    <MESSAGE value="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory" />
+    <option name="LAST_COMMIT_MESSAGE" value="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

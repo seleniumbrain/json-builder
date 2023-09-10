@@ -63,9 +63,8 @@ public class JsonObjectBuilder implements JsonBuilder {
 
     @Override
     @SneakyThrows
-    public JsonObjectBuilder withEmptyJsonObject() {
-        String emptyJsonObjectStyle = "{}";
-        this.rootObjectNode = (ObjectNode) MAPPER.readTree(emptyJsonObjectStyle);
+    public JsonObjectBuilder withEmptyNode() {
+        this.rootObjectNode = MAPPER.createObjectNode();
         return this;
     }
 
