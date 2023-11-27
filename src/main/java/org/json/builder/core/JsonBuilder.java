@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +28,11 @@ public interface JsonBuilder {
     ObjectMapper MAPPER = new ObjectMapper();
 
     static JsonBuilder getObjectBuilder() {
-        return BuilderFactory.getBuilder("JsonObjectBuilder");
+        return new JsonObjectBuilder();
     }
 
     static JsonBuilder getArrayBuilder() {
-        return BuilderFactory.getBuilder("JsonArrayBuilder");
+        return new JsonArrayBuilder();
     }
 
     JsonBuilder fromJsonFile(String jsonFileName);
@@ -53,6 +54,8 @@ public interface JsonBuilder {
     JsonBuilder remove(String jsonNodePath);
 
     JsonBuilder build();
+
+    JsonBuilder writeTo(String filePath);
 
     String toPrettyString();
 
