@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.json.builder.core;
+package org.json.builder.core_backup;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -66,13 +66,13 @@ public class JsonArrayBuilder implements JsonBuilder {
 
     @Override
     @SneakyThrows
-    synchronized public JsonArrayBuilder fromEmptyNode() {
+    synchronized public JsonArrayBuilder withEmptyNode() {
         this.rootArrayNode = MAPPER.createArrayNode();
         return this;
     }
 
     @Override
-    synchronized public JsonArrayBuilder update(String jsonNodePath, Object value, NodeType dataTypeOfValue) {
+    synchronized public JsonArrayBuilder append(String jsonNodePath, Object value, String dataTypeOfValue) {
         if (JsonBuilder.isNotSkippable(value)) {
             String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
             jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, dataTypeOfValue));
@@ -81,10 +81,10 @@ public class JsonArrayBuilder implements JsonBuilder {
     }
 
     @Override
-    synchronized public JsonArrayBuilder update(String jsonNodePath, Object value) {
+    synchronized public JsonArrayBuilder append(String jsonNodePath, Object value) {
         if (JsonBuilder.isNotSkippable(value)) {
             String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
-            jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, NodeType.STRING));
+            jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, NodeValueType.STRING.getType()));
         }
         return this;
     }
@@ -96,11 +96,25 @@ public class JsonArrayBuilder implements JsonBuilder {
             for (int i = 0; i < node.size(); i++) {
                 if (condition.test(node.get(i))) {
                     String pathToUpdate = arrayNodePath + "[" + i + "]." + key;
-                    this.update(pathToUpdate, newValue);
+                    this.append(pathToUpdate, newValue);
                 }
             }
         } else {
             throw new JsonBuilderException("Argument arrayNodePath is not an ArrayNode.");
+        }
+        return this;
+    }
+
+    @Override
+    synchronized public JsonArrayBuilder updateObjectNodeIf(Predicate<JsonNode> condition, String objectNodePath, String key, String newValue) {
+        JsonNode node = this.getNodeAt(objectNodePath);
+        if (node.isObject()) {
+            if (condition.test(node)) {
+                String pathToUpdate = objectNodePath + "." + key;
+                this.append(pathToUpdate, newValue);
+            }
+        } else {
+            throw new JsonBuilderException("Argument objectNodePath is not an ObjectNode.");
         }
         return this;
     }
@@ -181,12 +195,12 @@ public class JsonArrayBuilder implements JsonBuilder {
 
     @Override
     synchronized public List<String> extractJsonPaths() {
-        return JsonBuilder.collectJsonPaths(rootArrayNode, StringUtils.EMPTY, new ArrayList<>());
+        return JsonBuilder.printJsonPath(rootArrayNode, StringUtils.EMPTY, new ArrayList<>());
     }
 
     @Override
     synchronized public Map<String, String> extractJsonPathValueMap() {
-        return JsonBuilder.collectJsonPathKeyValuePairs(rootArrayNode, StringUtils.EMPTY, new LinkedHashMap<>());
+        return JsonBuilder.printJsonPathKeyValuePair(rootArrayNode, StringUtils.EMPTY, new HashMap<>());
     }
 
     synchronized private void setJsonPointerValueInJsonArray(ArrayNode node, JsonPointer pointer, JsonNode value) {

@@ -1,6 +1,86 @@
-/**
- *
- */
+from below selected files, is there a way to improve the interface vs implementation class.
+Scan through and refine the required methods to be inheritted from interface JsonBuilder.java
+Provide metter naming and exception handling
+Improve the coding to be precise and short without compromising its expected outcome and quality
+sort methods in logical order
+
+### Improvements to `JsonBuilder` Interface and `JsonObjectBuilder` Implementation
+
+**Problem 1: Refine Methods in Interface**
+
+Refine the methods in the `JsonBuilder` interface to ensure only necessary methods are inherited.
+
+**Problem 2: Better Naming and Exception Handling**
+
+Improve method names for clarity and enhance exception handling.
+
+**Problem 3: Code Precision and Quality**
+
+Make the code more precise and maintain quality without compromising the expected outcome.
+
+**Problem 4: Logical Order of Methods**
+
+Sort methods in a logical order for better readability and maintainability.
+
+### Refined `JsonBuilder` Interface
+
+```java
+package org.json.builder.core;
+
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Predicate;
+
+public interface JsonBuilder {
+
+    JsonBuilder fromJsonFile(String jsonFileName);
+
+    JsonBuilder fromJsonFile(File jsonFile);
+
+    JsonBuilder fromJsonString(String json);
+
+    JsonBuilder withEmptyNode();
+
+    JsonBuilder append(String jsonNodePath, Object value, String dataTypeOfValue);
+
+    JsonBuilder append(String jsonNodePath, Object value);
+
+    JsonBuilder updateArrayNodeIf(Predicate<JsonNode> condition, String arrayNodePath, String key, String newValue);
+
+    JsonBuilder updateObjectNodeIf(Predicate<JsonNode> condition, String objectNodePath, String key, String newValue);
+
+    JsonBuilder remove(String jsonNodePath);
+
+    JsonBuilder build();
+
+    JsonBuilder writeTo(String filePath);
+
+    String toPrettyString();
+
+    JsonNode buildAsJsonNode();
+
+    JsonNode getNodeAt(String jsonNodePath);
+
+    void clean();
+
+    boolean isBuilderEmpty();
+
+    <T> T transformToPojo(Class<T> classType);
+
+    <T> T transformNodeToPojo(String jsonNodePath, Class<T> classType);
+
+    List<String> extractJsonPaths();
+
+    Map<String, String> extractJsonPathValueMap();
+}
+```
+
+### Improved `JsonObjectBuilder` Implementation
+
+```java
 package org.json.builder.core;
 
 import com.fasterxml.jackson.core.JsonPointer;
@@ -17,28 +97,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 
-
-/**
- * @author rajkumarrajamani
- */
 public class JsonObjectBuilder implements JsonBuilder {
-
-    public static void main(String[] args) {
-        JsonObjectBuilder jsonObjectBuilder = new JsonObjectBuilder();
-        String json = jsonObjectBuilder.fromEmptyNode()
-                .update("name", "John Doe")
-                .update("age", "8738398.343", NodeType.FLOAT)
-                .update("isStudent", false)
-                .update("marks", 90.439843948439123456, NodeType.DECIMAL)
-                .update("subjects", JsonBuilder.transformPojoToJsonNode(List.of("Maths", "Science", "English")).toPrettyString(), NodeType.ARRAYNODE)
-                .update("address", JsonBuilder.transformPojoToJsonNode(Map.of("city", "New York", "state", "NY")).toPrettyString(), NodeType.OBJECTNODE)
-                .toPrettyString();
-        System.out.println(json);
-        JsonBuilder.collectJsonPathKeyValuePairs(jsonObjectBuilder.buildAsJsonNode(), StringUtils.EMPTY, new LinkedHashMap<>()).forEach((key, value) -> System.out.println(key + " : " + value));
-
-        String path = jsonObjectBuilder.buildAsJsonNode().findParents("city").toString();
-        System.out.println(path);
-    }
 
     private final Map<String, Object> jsonPathValueMapToAppend = new LinkedHashMap<>();
     private final Map<String, Object> jsonPathValueMapToRemove = new LinkedHashMap<>();
@@ -70,13 +129,13 @@ public class JsonObjectBuilder implements JsonBuilder {
 
     @Override
     @SneakyThrows
-    public synchronized JsonObjectBuilder fromEmptyNode() {
+    public synchronized JsonObjectBuilder withEmptyNode() {
         this.rootObjectNode = MAPPER.createObjectNode();
         return this;
     }
 
     @Override
-    public synchronized JsonObjectBuilder update(String jsonNodePath, Object value, NodeType dataTypeOfValue) {
+    public synchronized JsonObjectBuilder append(String jsonNodePath, Object value, String dataTypeOfValue) {
         if (JsonBuilder.isNotSkippable(value)) {
             jsonPathValueMapToAppend.put(convertPath(jsonNodePath), JsonBuilder.convertValueOfRequiredDataType(value, dataTypeOfValue));
         }
@@ -84,13 +143,19 @@ public class JsonObjectBuilder implements JsonBuilder {
     }
 
     @Override
-    public synchronized JsonObjectBuilder update(String jsonNodePath, Object value) {
-        return update(jsonNodePath, value, NodeType.STRING);
+    public synchronized JsonObjectBuilder append(String jsonNodePath, Object value) {
+        return append(jsonNodePath, value, NodeValueType.STRING.getType());
     }
 
     @Override
     public synchronized JsonObjectBuilder updateArrayNodeIf(Predicate<JsonNode> condition, String arrayNodePath, String key, String newValue) {
-        updateNodeIf(condition, arrayNodePath, key, newValue);
+        updateNodeIf(condition, arrayNodePath, key, newValue, true);
+        return this;
+    }
+
+    @Override
+    public synchronized JsonObjectBuilder updateObjectNodeIf(Predicate<JsonNode> condition, String objectNodePath, String key, String newValue) {
+        updateNodeIf(condition, objectNodePath, key, newValue, false);
         return this;
     }
 
@@ -106,6 +171,13 @@ public class JsonObjectBuilder implements JsonBuilder {
         jsonPathValueMapToAppend.clear();
         jsonPathValueMapToRemove.forEach((key, value) -> removeJsonPointerValue(rootObjectNode, JsonPointer.compile(key)));
         jsonPathValueMapToRemove.clear();
+        return this;
+    }
+
+    @SneakyThrows
+    @Override
+    public synchronized JsonObjectBuilder writeTo(String filePath) {
+        Files.writeString(Paths.get(filePath), toPrettyString());
         return this;
     }
 
@@ -134,42 +206,32 @@ public class JsonObjectBuilder implements JsonBuilder {
         jsonPathValueMapToRemove.clear();
     }
 
-    @SneakyThrows
     @Override
-    public synchronized JsonObjectBuilder writeTo(String filePath) {
-        Files.writeString(Paths.get(filePath), toPrettyString());
-        return this;
-    }
-
-    @Override
-    synchronized public boolean isBuilderEmpty() {
+    public synchronized boolean isBuilderEmpty() {
         return rootObjectNode.isNull() || rootObjectNode.isEmpty() || rootObjectNode.isMissingNode();
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @SneakyThrows
-    synchronized public <T> T transformToPojo(Class<?> classType) {
-        return (T) MAPPER.treeToValue(rootObjectNode, classType);
+    public synchronized <T> T transformToPojo(Class<T> classType) {
+        return MAPPER.treeToValue(rootObjectNode, classType);
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @SneakyThrows
-    synchronized public <T> T transformNodeToPojo(String jsonNodePath, Class<?> classType) {
-        return (T) MAPPER.treeToValue(rootObjectNode.at(convertPath(jsonNodePath)), classType);
+    public synchronized <T> T transformNodeToPojo(String jsonNodePath, Class<T> classType) {
+        return MAPPER.treeToValue(rootObjectNode.at(convertPath(jsonNodePath)), classType);
     }
 
     @Override
-    synchronized public List<String> extractJsonPaths() {
-        return JsonBuilder.collectJsonPaths(rootObjectNode, StringUtils.EMPTY, new ArrayList<>());
+    public synchronized List<String> extractJsonPaths() {
+        return JsonBuilder.printJsonPath(rootObjectNode, StringUtils.EMPTY, new ArrayList<>());
     }
 
     @Override
-    synchronized public Map<String, String> extractJsonPathValueMap() {
-        return JsonBuilder.collectJsonPathKeyValuePairs(rootObjectNode, StringUtils.EMPTY, new LinkedHashMap<>());
+    public synchronized Map<String, String> extractJsonPathValueMap() {
+        return JsonBuilder.printJsonPathKeyValuePair(rootObjectNode, StringUtils.EMPTY, new HashMap<>());
     }
-
 
     private void setJsonPointerValue(ObjectNode node, JsonPointer pointer, JsonNode value) {
         JsonPointer parentPointer = pointer.head();
@@ -213,44 +275,22 @@ public class JsonObjectBuilder implements JsonBuilder {
         }
     }
 
-//    private void updateNodeIf(Predicate<JsonNode> condition, String nodePath, String key, String newValue, boolean isArray) {
-//        JsonNode node = getNodeAt(nodePath);
-//        if (isArray && node.isArray()) {
-//            for (int i = 0; i < node.size(); i++) {
-//                if (condition.test(node.get(i))) {
-//                    update(nodePath + "[" + i + "]." + key, newValue);
-//                }
-//            }
-//        } else if (!isArray && node.isObject()) {
-//            if (condition.test(node)) {
-//                update(nodePath + "." + key, newValue);
-//            }
-//        } else {
-//            throw new JsonBuilderException("Invalid node type for path: " + nodePath);
-//        }
-//    }
-
-        private void updateNodeIf(Predicate<JsonNode> condition, String nodePath, String targetNodePath, String newValue) {
+    private void updateNodeIf(Predicate<JsonNode> condition, String nodePath, String key, String newValue, boolean isArray) {
         JsonNode node = getNodeAt(nodePath);
-        if (node.isArray()) {
+        if (isArray && node.isArray()) {
             for (int i = 0; i < node.size(); i++) {
                 if (condition.test(node.get(i))) {
-                    update(nodePath + "[" + i + "]." + targetNodePath, newValue);
+                    append(nodePath + "[" + i + "]." + key, newValue);
                 }
             }
-        } else if (node.isObject()) {
+        } else if (!isArray && node.isObject()) {
             if (condition.test(node)) {
-                update(nodePath + "." + targetNodePath, newValue);
+                append(nodePath + "." + key, newValue);
             }
         } else {
             throw new JsonBuilderException("Invalid node type for path: " + nodePath);
         }
     }
-
-    // write a method to return json path of the given JsonNode input object
-//    public String getJsonPath(JsonNode node) {
-//        return JsonBuilder.getJsonPath(rootObjectNode, node); // help me solve this method
-//    }
 
     private void validateFileName(String fileName) {
         if (fileName.isBlank()) {
@@ -280,3 +320,4 @@ public class JsonObjectBuilder implements JsonBuilder {
         return JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
     }
 }
+```

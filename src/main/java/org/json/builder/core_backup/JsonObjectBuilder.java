@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.json.builder.core;
+package org.json.builder.core_backup;
 
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,22 +17,22 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Predicate;
 
+
 /**
  * @author rajkumarrajamani
- *
  */
-public class JsonArrayBuilder implements JsonBuilder {
+public class JsonObjectBuilder implements JsonBuilder {
 
     private Map<String, Object> jsonPathValueMapToAppend = new LinkedHashMap<>();
     private Map<String, Object> jsonPathValueMapToRemove = new LinkedHashMap<>();
-    private ArrayNode rootArrayNode = MAPPER.createArrayNode();
+    private ObjectNode rootObjectNode = MAPPER.createObjectNode();
 
-    public JsonArrayBuilder() {
+    public JsonObjectBuilder() {
     }
 
     @Override
     @SneakyThrows
-    synchronized public JsonArrayBuilder fromJsonFile(String jsonFileName) {
+    synchronized public JsonObjectBuilder fromJsonFile(String jsonFileName) {
         if (jsonFileName.isBlank())
             throw new JsonBuilderException("File name isn't provided. Please provide a valid json file name.");
 
@@ -40,39 +40,39 @@ public class JsonArrayBuilder implements JsonBuilder {
         if (!file.exists() || !file.isFile())
             throw new JsonBuilderException("File doesn't exist. Please provide a valid json file name.");
 
-        this.rootArrayNode = (ArrayNode) MAPPER.readTree(file);
+        this.rootObjectNode = (ObjectNode) MAPPER.readTree(file);
         return this;
     }
 
     @Override
     @SneakyThrows
-    synchronized public JsonArrayBuilder fromJsonFile(File jsonFile) {
+    synchronized public JsonObjectBuilder fromJsonFile(File jsonFile) {
         if (!jsonFile.exists() || !jsonFile.isFile())
             throw new JsonBuilderException("File doesn't exist. Please provide a valid json file name.");
 
-        this.rootArrayNode = (ArrayNode) MAPPER.readTree(jsonFile);
+        this.rootObjectNode = (ObjectNode) MAPPER.readTree(jsonFile);
         return this;
     }
 
     @Override
     @SneakyThrows
-    synchronized public JsonArrayBuilder fromJsonString(String json) {
+    synchronized public JsonObjectBuilder fromJsonString(String json) {
         if (Objects.isNull(json) || json.isBlank())
             throw new JsonBuilderException("Json is either null or blank. Please provide a valid json.");
 
-        this.rootArrayNode = (ArrayNode) MAPPER.readTree(json);
+        this.rootObjectNode = (ObjectNode) MAPPER.readTree(json);
         return this;
     }
 
     @Override
     @SneakyThrows
-    synchronized public JsonArrayBuilder fromEmptyNode() {
-        this.rootArrayNode = MAPPER.createArrayNode();
+    synchronized public JsonObjectBuilder withEmptyNode() {
+        this.rootObjectNode = MAPPER.createObjectNode();
         return this;
     }
 
     @Override
-    synchronized public JsonArrayBuilder update(String jsonNodePath, Object value, NodeType dataTypeOfValue) {
+    synchronized public JsonObjectBuilder append(String jsonNodePath, Object value, String dataTypeOfValue) {
         if (JsonBuilder.isNotSkippable(value)) {
             String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
             jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, dataTypeOfValue));
@@ -81,22 +81,21 @@ public class JsonArrayBuilder implements JsonBuilder {
     }
 
     @Override
-    synchronized public JsonArrayBuilder update(String jsonNodePath, Object value) {
+    synchronized public JsonObjectBuilder append(String jsonNodePath, Object value) {
         if (JsonBuilder.isNotSkippable(value)) {
             String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
-            jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, NodeType.STRING));
+            jsonPathValueMapToAppend.put(jsonPath, JsonBuilder.convertValueOfRequiredDataType(value, NodeValueType.STRING.getType()));
         }
         return this;
     }
 
-    @Override
-    synchronized public JsonArrayBuilder updateArrayNodeIf(Predicate<JsonNode> condition, String arrayNodePath, String key, String newValue) {
+    synchronized public JsonObjectBuilder updateArrayNodeIf(Predicate<JsonNode> condition, String arrayNodePath, String key, String newValue) {
         JsonNode node = this.getNodeAt(arrayNodePath);
         if (node.isArray()) {
             for (int i = 0; i < node.size(); i++) {
                 if (condition.test(node.get(i))) {
                     String pathToUpdate = arrayNodePath + "[" + i + "]." + key;
-                    this.update(pathToUpdate, newValue);
+                    this.append(pathToUpdate, newValue);
                 }
             }
         } else {
@@ -105,21 +104,34 @@ public class JsonArrayBuilder implements JsonBuilder {
         return this;
     }
 
+    synchronized public JsonObjectBuilder updateObjectNodeIf(Predicate<JsonNode> condition, String objectNodePath, String key, String newValue) {
+        JsonNode node = this.getNodeAt(objectNodePath);
+        if (node.isObject()) {
+            if (condition.test(node)) {
+                String pathToUpdate = objectNodePath + "." + key;
+                this.append(pathToUpdate, newValue);
+            }
+        } else {
+            throw new JsonBuilderException("Argument objectNodePath is not an ObjectNode.");
+        }
+        return this;
+    }
+
     @Override
-    synchronized public JsonArrayBuilder remove(String jsonNodePath) {
+    synchronized public JsonObjectBuilder remove(String jsonNodePath) {
         String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
         jsonPathValueMapToRemove.put(jsonPath, "");
         return this;
     }
 
     @Override
-    synchronized public JsonArrayBuilder build() {
+    synchronized public JsonObjectBuilder build() {
         Optional.ofNullable(jsonPathValueMapToAppend).orElse(new HashMap<>())
-                .forEach((key, value) -> setJsonPointerValueInJsonArray(rootArrayNode, JsonPointer.compile(key), (JsonNode) value));
+                .forEach((key, value) -> setJsonPointerValueInJsonObject(rootObjectNode, JsonPointer.compile(key), (JsonNode) value));
         jsonPathValueMapToAppend.clear();
 
         Optional.ofNullable(jsonPathValueMapToRemove).orElse(new HashMap<>())
-                .forEach((key, value) -> removeJsonPointerValueInJsonArray(rootArrayNode, JsonPointer.compile(key)));
+                .forEach((key, value) -> removeJsonPointerValueInJsonObject(rootObjectNode, JsonPointer.compile(key)));
         jsonPathValueMapToRemove.clear();
 
         return this;
@@ -127,7 +139,7 @@ public class JsonArrayBuilder implements JsonBuilder {
 
     @SneakyThrows
     @Override
-    synchronized public JsonArrayBuilder writeTo(String filePath) {
+    synchronized public JsonObjectBuilder writeTo(String filePath) {
         String json = this.toPrettyString();
         Files.writeString(Paths.get(filePath), json);
         return this;
@@ -135,40 +147,40 @@ public class JsonArrayBuilder implements JsonBuilder {
 
     @Override
     synchronized public String toPrettyString() {
-        return rootArrayNode.toPrettyString();
+        return rootObjectNode.toPrettyString();
     }
 
     @Override
     synchronized public JsonNode buildAsJsonNode() {
         this.build();
-        if (Objects.isNull(rootArrayNode))
+        if (Objects.isNull(rootObjectNode))
             throw new JsonBuilderException("ObjectMapper is empty or null. Please provide input.");
-        return rootArrayNode;
+        return rootObjectNode;
     }
 
     @Override
     synchronized public JsonNode getNodeAt(String jsonNodePath) {
         String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
-        return rootArrayNode.at(jsonPath);
+        return rootObjectNode.at(jsonPath);
     }
 
     @Override
     synchronized public void clean() {
-        rootArrayNode.removeAll();
+        rootObjectNode.removeAll();
         jsonPathValueMapToAppend = new LinkedHashMap<>();
         jsonPathValueMapToRemove = new LinkedHashMap<>();
     }
 
     @Override
     synchronized public boolean isBuilderEmpty() {
-        return rootArrayNode.isNull() || rootArrayNode.isEmpty() || rootArrayNode.isMissingNode();
+        return rootObjectNode.isNull() || rootObjectNode.isEmpty() || rootObjectNode.isMissingNode();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     @SneakyThrows
     synchronized public <T> T transformToPojo(Class<?> classType) {
-        return (T) MAPPER.treeToValue(rootArrayNode, classType);
+        return (T) MAPPER.treeToValue(rootObjectNode, classType);
     }
 
     @Override
@@ -176,27 +188,28 @@ public class JsonArrayBuilder implements JsonBuilder {
     @SneakyThrows
     synchronized public <T> T transformNodeToPojo(String jsonNodePath, Class<?> classType) {
         String jsonPath = JsonBuilder.convertJsonNodePathWithSlashSeparator(jsonNodePath);
-        return (T) MAPPER.treeToValue(rootArrayNode.at(jsonPath), classType);
+        return (T) MAPPER.treeToValue(rootObjectNode.at(jsonPath), classType);
     }
 
     @Override
     synchronized public List<String> extractJsonPaths() {
-        return JsonBuilder.collectJsonPaths(rootArrayNode, StringUtils.EMPTY, new ArrayList<>());
+        return JsonBuilder.printJsonPath(rootObjectNode, StringUtils.EMPTY, new ArrayList<>());
     }
 
     @Override
     synchronized public Map<String, String> extractJsonPathValueMap() {
-        return JsonBuilder.collectJsonPathKeyValuePairs(rootArrayNode, StringUtils.EMPTY, new LinkedHashMap<>());
+        return JsonBuilder.printJsonPathKeyValuePair(rootObjectNode, StringUtils.EMPTY, new HashMap<>());
     }
 
-    synchronized private void setJsonPointerValueInJsonArray(ArrayNode node, JsonPointer pointer, JsonNode value) {
+
+    synchronized private void setJsonPointerValueInJsonObject(ObjectNode node, JsonPointer pointer, JsonNode value) {
         JsonPointer parentPointer = pointer.head();
         JsonNode parentNode = node.at(parentPointer);
         String fieldName = pointer.last().toString().substring(1);
 
         if (parentNode.isMissingNode() || parentNode.isNull()) {
             parentNode = StringUtils.isNumeric(fieldName) ? MAPPER.createArrayNode() : MAPPER.createObjectNode();
-            setJsonPointerValueInJsonArray(node, parentPointer, parentNode); // recursively reconstruct hierarchy
+            setJsonPointerValueInJsonObject(node, parentPointer, parentNode); // recursively reconstruct hierarchy
         }
 
         if (parentNode.isArray()) {
@@ -215,7 +228,7 @@ public class JsonArrayBuilder implements JsonBuilder {
         }
     }
 
-    synchronized private void removeJsonPointerValueInJsonArray(ArrayNode node, JsonPointer pointer) {
+    synchronized private void removeJsonPointerValueInJsonObject(ObjectNode node, JsonPointer pointer) {
         JsonPointer parentPointer = pointer.head();
         JsonNode parentNode = node.at(parentPointer);
         String fieldName = pointer.last().toString().substring(1);

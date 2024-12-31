@@ -12,12 +12,8 @@ import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.function.Predicate;
 
 /**
@@ -27,11 +23,11 @@ public interface JsonBuilder {
 
     ObjectMapper MAPPER = new ObjectMapper();
 
-    static JsonBuilder getObjectBuilder() {
+    static JsonBuilder objectBuilder() {
         return new JsonObjectBuilder();
     }
 
-    static JsonBuilder getArrayBuilder() {
+    static JsonBuilder arrayBuilder() {
         return new JsonArrayBuilder();
     }
 
@@ -41,21 +37,17 @@ public interface JsonBuilder {
 
     JsonBuilder fromJsonString(String json);
 
-    JsonBuilder withEmptyNode();
+    JsonBuilder fromEmptyNode();
 
-    JsonBuilder append(String jsonNodePath, Object value, String dataTypeOfValue);
+    JsonBuilder update(String jsonNodePath, Object value, NodeType dataTypeOfValue);
 
-    JsonBuilder append(String jsonNodePath, Object value);
+    JsonBuilder update(String jsonNodePath, Object value);
 
     JsonBuilder updateArrayNodeIf(Predicate<JsonNode> condition, String arrayNodePath, String key, String newValue);
-
-    JsonBuilder updateObjectNodeIf(Predicate<JsonNode> condition, String objectNodePath, String key, String newValue);
 
     JsonBuilder remove(String jsonNodePath);
 
     JsonBuilder build();
-
-    JsonBuilder writeTo(String filePath);
 
     String toPrettyString();
 
@@ -64,6 +56,8 @@ public interface JsonBuilder {
     JsonNode getNodeAt(String jsonNodePath);
 
     void clean();
+
+    JsonBuilder writeTo(String filePath);
 
     boolean isBuilderEmpty();
 
@@ -114,108 +108,147 @@ public interface JsonBuilder {
         return MAPPER.readValue(json, TypeFactory.defaultInstance().constructCollectionType(List.class, type));
     }
 
-    static String convertJsonNodePathWithSlashSeparator(String jsonNodePath) {
-        if (Objects.nonNull(jsonNodePath)) {
-            jsonNodePath = StringUtils.replace(jsonNodePath, ".", "/");
-            jsonNodePath = StringUtils.replace(jsonNodePath, "[", "/");
-            jsonNodePath = StringUtils.replace(jsonNodePath, "]", "/");
-            jsonNodePath = StringUtils.replace(jsonNodePath, "//", "/");
-            jsonNodePath = StringUtils.prependIfMissing(jsonNodePath, "/");
-            jsonNodePath = StringUtils.removeEnd(jsonNodePath, "/");
+    static String convertJsonNodePathWithSlashSeparator(String jsonPath) {
+        if (Objects.nonNull(jsonPath)) {
+            jsonPath = StringUtils.replace(jsonPath, ".", "/");
+            jsonPath = StringUtils.replace(jsonPath, "[", "/");
+            jsonPath = StringUtils.replace(jsonPath, "]", "/");
+            jsonPath = StringUtils.replace(jsonPath, "//", "/");
+            jsonPath = StringUtils.prependIfMissing(jsonPath, "/");
+            jsonPath = StringUtils.removeEnd(jsonPath, "/");
         }
-        return jsonNodePath;
+        return jsonPath;
     }
 
     static boolean isNotSkippable(Object value) {
         if (Objects.nonNull(value)) {
             String stringValue = String.valueOf(value);
-            return !stringValue.equalsIgnoreCase(NodeValueType.SKIP.getType()) && !stringValue.equalsIgnoreCase(NodeValueType.IGNORE.getType());
+            return !stringValue.equalsIgnoreCase(NodeType.SKIP.getType()) && !stringValue.equalsIgnoreCase(NodeType.IGNORE.getType());
         }
         return true;
     }
 
-    static List<String> printJsonPath(JsonNode jsonNode, String parentPath, List<String> pathCollections) {
-        if (jsonNode.isObject()) {
-            final Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields();
-            while (iterator.hasNext()) {
-                final Entry<String, JsonNode> innerNode = iterator.next();
-                final JsonNode valueNode = innerNode.getValue();
-                final String path = parentPath.isBlank() ? innerNode.getKey() : parentPath + "." + innerNode.getKey();
-
-                if (valueNode.isArray()) {
-                    for (int i = 0; i < valueNode.size(); i++) {
-                        printJsonPath(valueNode.get(i), path + "[" + i + "]", pathCollections);
-                    }
-                } else if (valueNode.isObject()) {
-                    printJsonPath(valueNode, path, pathCollections);
-                } else {
-                    pathCollections.add(path);
-                }
-            }
-        } else if (jsonNode.isArray()) {
-            for (int i = 0; i < jsonNode.size(); i++) {
-                printJsonPath(jsonNode.get(i), parentPath + "[" + i + "]", pathCollections);
-            }
+    static String getJsonPath(JsonNode rootNode, JsonNode subNode) {
+        StringBuilder jsonPath = new StringBuilder();
+        if (findJsonPath(rootNode, subNode, jsonPath, "")) {
+            return jsonPath.toString();
         }
-        return pathCollections;
+        return null; // Return null if subNode is not found in rootNode
     }
 
-    static Map<String, String> printJsonPathKeyValuePair(JsonNode jsonNode, String parentPath, Map<String, String> pathKeyValueMap) {
-        if (jsonNode.isObject()) {
-            final Iterator<Entry<String, JsonNode>> iterator = jsonNode.fields();
-            while (iterator.hasNext()) {
-                final Entry<String, JsonNode> innerNode = iterator.next();
-                final JsonNode valueNode = innerNode.getValue();
-                final String path = parentPath.isBlank() ? innerNode.getKey() : parentPath + "." + innerNode.getKey();
+    private static boolean findJsonPath(JsonNode currentNode, JsonNode targetNode, StringBuilder jsonPath, String currentPath) {
+        if (currentNode.equals(targetNode)) {
+            jsonPath.append(currentPath);
+            return true;
+        }
 
-                if (valueNode.isArray()) {
-                    for (int i = 0; i < valueNode.size(); i++) {
-                        printJsonPathKeyValuePair(valueNode.get(i), path + "[" + i + "]", pathKeyValueMap);
-                    }
-                } else if (valueNode.isObject()) {
-                    printJsonPathKeyValuePair(valueNode, path, pathKeyValueMap);
-                } else {
-                    pathKeyValueMap.put(path, valueNode.asText());
+        if (currentNode.isObject()) {
+            for (var entry : iterable(currentNode.fields())) {
+                String newPath = currentPath.isEmpty() ? entry.getKey() : currentPath + "." + entry.getKey();
+                if (findJsonPath(entry.getValue(), targetNode, jsonPath, newPath)) {
+                    return true;
                 }
             }
-        } else if (jsonNode.isArray()) {
-            for (int i = 0; i < jsonNode.size(); i++) {
-                printJsonPathKeyValuePair(jsonNode.get(i), parentPath + "[" + i + "]", pathKeyValueMap);
+        } else if (currentNode.isArray()) {
+            for (int i = 0; i < currentNode.size(); i++) {
+                String newPath = currentPath + "[" + i + "]";
+                if (findJsonPath(currentNode.get(i), targetNode, jsonPath, newPath)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private static <T> Iterable<T> iterable(Iterator<T> iterator) {
+        return () -> iterator;
+    }
+
+    static List<String> collectJsonPaths(JsonNode node, String parentPath, List<String> paths) {
+        if (node.isObject()) {
+            node.fields().forEachRemaining(entry -> {
+                String currentPath = parentPath.isEmpty() ? entry.getKey() : parentPath + "." + entry.getKey();
+                JsonNode childNode = entry.getValue();
+                if (childNode.isArray()) {
+                    for (int i = 0; i < childNode.size(); i++) {
+                        JsonNode arrayElement = childNode.get(i);
+                        if (arrayElement.isTextual()) {
+                            paths.add(currentPath + "[" + i + "]");
+                        } else {
+                            collectJsonPaths(arrayElement, currentPath + "[" + i + "]", paths);
+                        }
+                    }
+                } else if (childNode.isObject()) {
+                    collectJsonPaths(childNode, currentPath, paths);
+                } else {
+                    paths.add(currentPath);
+                }
+            });
+        } else if (node.isArray()) {
+            for (int i = 0; i < node.size(); i++) {
+                JsonNode arrayElement = node.get(i);
+                if (arrayElement.isTextual()) {
+                    paths.add(parentPath + "[" + i + "]");
+                } else {
+                    collectJsonPaths(arrayElement, parentPath + "[" + i + "]", paths);
+                }
+            }
+        }
+        return paths;
+    }
+
+    static Map<String, String> collectJsonPathKeyValuePairs(JsonNode node, String parentPath, LinkedHashMap<String, String> pathKeyValueMap) {
+        if (node.isObject()) {
+            node.fields().forEachRemaining(entry -> {
+                String currentPath = parentPath.isEmpty() ? entry.getKey() : parentPath + "." + entry.getKey();
+                JsonNode childNode = entry.getValue();
+                if (childNode.isArray()) {
+                    for (int i = 0; i < childNode.size(); i++) {
+                        JsonNode arrayElement = childNode.get(i);
+                        if (arrayElement.isTextual()) {
+                            pathKeyValueMap.put(currentPath + "[" + i + "]", arrayElement.asText());
+                        } else {
+                            collectJsonPathKeyValuePairs(arrayElement, currentPath + "[" + i + "]", pathKeyValueMap);
+                        }
+                    }
+                } else if (childNode.isObject()) {
+                    collectJsonPathKeyValuePairs(childNode, currentPath, pathKeyValueMap);
+                } else {
+                    pathKeyValueMap.put(currentPath, childNode.asText());
+                }
+            });
+        } else if (node.isArray()) {
+            for (int i = 0; i < node.size(); i++) {
+                JsonNode arrayElement = node.get(i);
+                if (arrayElement.isTextual()) {
+                    pathKeyValueMap.put(parentPath + "[" + i + "]", arrayElement.asText());
+                } else {
+                    collectJsonPathKeyValuePairs(arrayElement, parentPath + "[" + i + "]", pathKeyValueMap);
+                }
             }
         }
         return pathKeyValueMap;
     }
 
-    static JsonNode convertValueOfRequiredDataType(Object value, String valueType) {
+    static JsonNode convertValueOfRequiredDataType(Object value, NodeType valueType) {
+        if (value == null) return NullNode.getInstance();
 
-        String stringValue = "";
+        String stringValue = Objects.toString(value, "");
 
-        if (Objects.nonNull(value)) stringValue = String.valueOf(value);
-
-        if (valueType.equalsIgnoreCase(NodeValueType.INT.getType()) || valueType.equalsIgnoreCase(NodeValueType.NUMBER.getType()) || valueType.equalsIgnoreCase(NodeValueType.INTEGER.getType()))
-            return new IntNode(Integer.parseInt(stringValue));
-        else if (valueType.equalsIgnoreCase(NodeValueType.LONG.getType()))
-            return new LongNode(Long.parseLong(stringValue));
-        else if (valueType.equalsIgnoreCase(NodeValueType.DOUBLE.getType()) || valueType.equalsIgnoreCase(NodeValueType.DECIMAL.getType()) || valueType.equalsIgnoreCase(NodeValueType.FLOAT.getType()))
-            return new DoubleNode(Double.parseDouble(stringValue));
-        else if (valueType.equalsIgnoreCase(NodeValueType.BOOLEAN.getType()))
-            return BooleanNode.valueOf(Boolean.parseBoolean(stringValue));
-        else if (valueType.equalsIgnoreCase(NodeValueType.STRING.getType()) || valueType.equalsIgnoreCase(NodeValueType.TEXT.getType())) {
-            if (Objects.isNull(value)) return null;
-            else if (String.valueOf(value).equalsIgnoreCase(NodeValueType.BLANK.getType()) || String.valueOf(value).equalsIgnoreCase(NodeValueType.EMPTY.getType()))
-                return new TextNode("");
-            else return new TextNode(stringValue);
-        } else if (valueType.equalsIgnoreCase(NodeValueType.NULL.getType())) return null;
-        else if (valueType.equalsIgnoreCase(NodeValueType.OBJECTNODE.getType()))
-            return new ObjectMapper().createObjectNode();
-        else if (valueType.equalsIgnoreCase(NodeValueType.ARRAYNODE.getType()))
-            return new ObjectMapper().createArrayNode();
-        else if (valueType.equalsIgnoreCase(NodeValueType.OBJECT_STYLE_JSON.getType())) {
-            if (!stringValue.isBlank()) return JsonBuilder.getObjectBuilder().fromJsonString(stringValue).buildAsJsonNode();
-            else return new ObjectMapper().createObjectNode();
-        } else if (valueType.equalsIgnoreCase(NodeValueType.ARRAY_STYLE_JSON.getType())) {
-            if (!stringValue.isBlank()) return JsonBuilder.getArrayBuilder().fromJsonString(stringValue).buildAsJsonNode();
-            else return new ObjectMapper().createArrayNode();
-        } else return new TextNode(stringValue);
+        return switch (valueType) {
+            case INT, LONG, NUMBER, INTEGER -> new LongNode((long) Double.parseDouble(stringValue));
+            case DOUBLE, DECIMAL, FLOAT -> new DecimalNode(new BigDecimal(stringValue));
+            case BOOLEAN -> BooleanNode.valueOf(Boolean.parseBoolean(stringValue));
+            case EMPTY, BLANK -> new TextNode("");
+            case NULL -> NullNode.getInstance();
+            case EMPTYOBJECT -> MAPPER.createObjectNode();
+            case EMPTYARRAY -> MAPPER.createArrayNode();
+            case OBJECTNODE ->
+                    stringValue.isBlank() ? MAPPER.createObjectNode() : JsonBuilder.objectBuilder().fromJsonString(stringValue).buildAsJsonNode();
+            case ARRAYNODE ->
+                    stringValue.isBlank() ? MAPPER.createArrayNode() : JsonBuilder.arrayBuilder().fromJsonString(stringValue).buildAsJsonNode();
+            default -> new TextNode(stringValue);
+        };
     }
 }
