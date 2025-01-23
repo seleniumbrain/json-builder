@@ -5,17 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="89d09cca-2b5b-4e95-8e54-b9840184becb" name="Changes" comment="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonPathFinder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/NodeType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonArrayBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonObjectBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/ref.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/json/builder/Address.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/json/builder/JsonObjectBuilderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/json/builder/Person.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/json/builder/PhoneNumbersItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/json/builder/Response.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/resources/sample.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonArrayBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonArrayBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonObjectBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/JsonObjectBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/NodeValueType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/NodeValueType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core/NodeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/json/builder/core/NodeType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonArrayBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/JsonObjectBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/json/builder/core_backup/NodeValueType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/ref.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,8 +33,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Enum" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -70,8 +75,10 @@
   "keyToString": {
     "Application.JsonObjectBuilder.executor": "Run",
     "Application.JsonPathFinder.executor": "Run",
+    "JUnit.JsonObjectBuilderTest.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
@@ -79,7 +86,7 @@
     "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.ide.settings.new.ui"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -91,7 +98,7 @@
       <recent name="org.json.builder" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.JsonPathFinder">
+  <component name="RunManager" selected="JUnit.JsonObjectBuilderTest">
     <configuration default="true" type="AZURE_FUNCTION_SUPPORT" factoryName="Run Functions">
       <option name="appName" />
       <option name="appServicePlanName" />
@@ -163,10 +170,26 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="JsonObjectBuilderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="json-builder" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.json.builder.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.json.builder" />
+      <option name="MAIN_CLASS_NAME" value="org.json.builder.JsonObjectBuilderTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.JsonPathFinder" />
+        <item itemvalue="JUnit.JsonObjectBuilderTest" />
         <item itemvalue="Application.JsonObjectBuilder" />
+        <item itemvalue="Application.JsonPathFinder" />
         <item itemvalue="Application.Test" />
       </list>
     </recent_temporary>
@@ -236,7 +259,15 @@
       <option name="project" value="LOCAL" />
       <updated>1701096069324</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="2nd Commit - finished JsonObjectBuilder and JsonArrayBuilder with builder exception and factory">
+      <option name="closed" value="true" />
+      <created>1735616691743</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1735616691743</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
