@@ -63,12 +63,12 @@ public class JsonObjectBuilder implements JsonBuilder {
      *
      *                              <p>Example usage:</p>
      *                              <pre>
-     *                                                                                                                                                                                                                                                                                                   {@code
-     *                                                                                                                                                                                                                                                                                                   String jsonFileName = "file-path/data.json";
-     *                                                                                                                                                                                                                                                                                                   JsonObjectBuilder builder = new JsonObjectBuilder();
-     *                                                                                                                                                                                                                                                                                                   String json = builder.fromJsonFile(jsonFileName).build().toPrettyString();
-     *                                                                                                                                                                                                                                                                                                   }
-     *                                                                                                                                                                                                                                                                                                   </pre>
+     *                                                                                                                                                                                                                                                                                                                                {@code
+     *                                                                                                                                                                                                                                                                                                                                String jsonFileName = "file-path/data.json";
+     *                                                                                                                                                                                                                                                                                                                                JsonObjectBuilder builder = new JsonObjectBuilder();
+     *                                                                                                                                                                                                                                                                                                                                String json = builder.fromJsonFile(jsonFileName).build().toPrettyString();
+     *                                                                                                                                                                                                                                                                                                                                }
+     *                                                                                                                                                                                                                                                                                                                                </pre>
      */
     @Override
     @SneakyThrows
@@ -87,12 +87,12 @@ public class JsonObjectBuilder implements JsonBuilder {
      *
      *                              <p>Example usage:</p>
      *                              <pre>
-     *                                                                                                                                                                                                                                                                                                   {@code
-     *                                                                                                                                                                                                                                                                                                   File jsonFile = new File("file-path/data.json");
-     *                                                                                                                                                                                                                                                                                                   JsonObjectBuilder builder = new JsonObjectBuilder();
-     *                                                                                                                                                                                                                                                                                                   String json = builder.fromJsonFile(jsonFile).build().toPrettyString();
-     *                                                                                                                                                                                                                                                                                                   }
-     *                                                                                                                                                                                                                                                                                                   </pre>
+     *                                                                                                                                                                                                                                                                                                                                {@code
+     *                                                                                                                                                                                                                                                                                                                                File jsonFile = new File("file-path/data.json");
+     *                                                                                                                                                                                                                                                                                                                                JsonObjectBuilder builder = new JsonObjectBuilder();
+     *                                                                                                                                                                                                                                                                                                                                String json = builder.fromJsonFile(jsonFile).build().toPrettyString();
+     *                                                                                                                                                                                                                                                                                                                                }
+     *                                                                                                                                                                                                                                                                                                                                </pre>
      */
     @Override
     @SneakyThrows
@@ -111,12 +111,12 @@ public class JsonObjectBuilder implements JsonBuilder {
      *
      *                              <p>Example usage:</p>
      *                              <pre>
-     *                                                                                                                                                                                                                                                                                                   {@code
-     *                                                                                                                                                                                                                                                                                                   File jsonFile = new File("file-path/data.json");
-     *                                                                                                                                                                                                                                                                                                   JsonObjectBuilder builder = new JsonObjectBuilder();
-     *                                                                                                                                                                                                                                                                                                   String json = builder.fromJsonString("{\"name\":\"John\"}").build().toPrettyString();
-     *                                                                                                                                                                                                                                                                                                   }
-     *                                                                                                                                                                                                                                                                                                   </pre>
+     *                                                                                                                                                                                                                                                                                                                                {@code
+     *                                                                                                                                                                                                                                                                                                                                File jsonFile = new File("file-path/data.json");
+     *                                                                                                                                                                                                                                                                                                                                JsonObjectBuilder builder = new JsonObjectBuilder();
+     *                                                                                                                                                                                                                                                                                                                                String json = builder.fromJsonString("{\"name\":\"John\"}").build().toPrettyString();
+     *                                                                                                                                                                                                                                                                                                                                }
+     *                                                                                                                                                                                                                                                                                                                                </pre>
      */
     @Override
     @SneakyThrows
@@ -499,28 +499,28 @@ public class JsonObjectBuilder implements JsonBuilder {
      *
      *                     <p>Class Structure:</p>
      *                     <pre>{@code
-     *                                         public class Person {
-     *                                             private String name;
-     *                                             private int age;
+     *                                                             public class Person {
+     *                                                                 private String name;
+     *                                                                 private int age;
      *
-     *                                             // Getters and Setters
-     *                                         }
-     *                                         }</pre>
+     *                                                                 // Getters and Setters
+     *                                                             }
+     *                                                             }</pre>
      *
      *                     <p>Example usage:</p>
      *                     <pre>{@code
-     *                                         JsonObjectBuilder builder = new JsonObjectBuilder();
-     *                                         builder.fromJsonString("{\"name\":\"John\", \"age\":30}");
-     *                                         Person person = builder.transformToPojo(Person.class);
-     *                                         System.out.println(person.getName());
-     *                                         System.out.println(person.getAge());
-     *                                         }</pre>
+     *                                                             JsonObjectBuilder builder = new JsonObjectBuilder();
+     *                                                             builder.fromJsonString("{\"name\":\"John\", \"age\":30}");
+     *                                                             Person person = builder.transformToPojo(Person.class);
+     *                                                             System.out.println(person.getName());
+     *                                                             System.out.println(person.getAge());
+     *                                                             }</pre>
      *
      *                     <p>Output:</p>
      *                     <pre>{@code
-     *                                         John
-     *                                         30
-     *                                         }</pre>
+     *                                                             John
+     *                                                             30
+     *                                                             }</pre>
      */
     @Override
     @SuppressWarnings("unchecked")

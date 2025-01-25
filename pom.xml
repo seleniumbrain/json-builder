@@ -4,7 +4,7 @@
 
     <groupId>io.github.seleniumbrain</groupId>
     <artifactId>json-builder</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>JsonBuilder</name>
@@ -50,10 +50,12 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.15.0</jackson.version>
+        <jayway.version>2.9.0</jayway.version>
         <lombok.version>1.18.28</lombok.version>
     </properties>
 
     <dependencies>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -61,19 +63,24 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+
+        <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>${jayway.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -92,14 +99,12 @@
             <version>2.0.7</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>4.4</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -154,10 +159,6 @@
                                 <relocation>
                                     <pattern>commons-io</pattern>
                                     <shadedPattern>io.github.seleniumbrain.shaded.commons-io</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.junit.jupiter</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.org.junit.jupiter</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>

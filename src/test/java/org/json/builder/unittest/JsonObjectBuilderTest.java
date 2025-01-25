@@ -1,6 +1,7 @@
-package org.json.builder;
+package org.json.builder.unittest;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.json.builder.bean.Person;
 import org.json.builder.core.JsonObjectBuilder;
 import org.json.builder.core.NodeType;
 import org.json.builder.exception.JsonBuilderException;
@@ -10,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -1,7 +1,7 @@
-package org.json.builder.core;
+package org.json.builder.helper;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.builder.core.JsonBuilder;
 
 import java.util.Iterator;
 
@@ -42,27 +42,5 @@ public class JsonPathFinder {
 
     private static <T> Iterable<T> iterable(Iterator<T> iterator) {
         return () -> iterator;
-    }
-
-    public static void main(String[] args) throws Exception {
-        String json = """
-                {
-                  "name": "John",
-                  "details": {
-                    "age": 30,
-                    "addresses": [
-                      { "city": "New York", "zip": "10001" },
-                      { "city": "Los Angeles", "zip": "90001" }
-                    ]
-                  }
-                }
-                """;
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode rootNode = mapper.readTree(json);
-        JsonNode subNode = rootNode.get("details").get("age");
-
-        String jsonPath = getJsonPath(rootNode, subNode);
-        System.out.println("JSON Path: " + jsonPath); // Output: details.addresses[1].city
     }
 }

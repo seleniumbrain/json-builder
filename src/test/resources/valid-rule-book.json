@@ -1,0 +1,29 @@
+[
+  {
+    "description": "name node",
+    "dirCheck": true,
+    "dirValidation": {
+      "expressions": [
+        "$[?(@.name == 'Alice')]"
+      ]
+    },
+    "indValidation": {
+      "condition": "",
+      "expressions": []
+    }
+  },
+  {
+    "description": "friends[].hobbies node",
+    "dirCheck": false,
+    "dirValidation": {
+      "expressions": []
+    },
+    "indValidation": {
+      "condition": "$.friends[?(@.age == 32)]",
+      "expressions": [
+        "$[*].hobbies[?(@ == 'painting')]",
+        "$[*].hobbies[?(@ == 'writing')]"
+      ]
+    }
+  }
+]

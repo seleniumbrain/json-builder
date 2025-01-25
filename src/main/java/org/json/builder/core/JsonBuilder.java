@@ -79,10 +79,6 @@ public interface JsonBuilder {
         return node.at(jsonPath).isMissingNode() ? "null" : node.at(jsonPath).asText();
     }
 
-    static JsonNode transformPojoToJsonNode(Object object) {
-        return MAPPER.valueToTree(object);
-    }
-
     static String extractPojoToPretryJsonString(Object object) {
         return generateString(object, true);
     }
@@ -94,6 +90,15 @@ public interface JsonBuilder {
     private static String generateString(Object object, boolean pretty) {
         if (pretty) return MAPPER.valueToTree(object).toPrettyString();
         else return MAPPER.valueToTree(object).toString();
+    }
+
+    static JsonNode transformPojoToJsonNode(Object object) {
+        return MAPPER.valueToTree(object);
+    }
+
+    @SneakyThrows
+    static JsonNode transformJsonStringToJsonNode(String json) {
+        return MAPPER.readTree(json);
     }
 
     @SneakyThrows

@@ -1,0 +1,31 @@
+{
+  "name": "Alice",
+  "friends": [
+    {
+      "name": "Bob",
+      "age": 28,
+      "hobbies": [
+        "gaming",
+        "music"
+      ]
+    },
+    {
+      "name": "Charlie",
+      "age": 32,
+      "hobbies": [
+        "painting",
+        "writing"
+      ],
+      "pets": [
+        {
+          "name": "Fluffy",
+          "species": "cat"
+        },
+        {
+          "name": "Buddy",
+          "species": "dog"
+        }
+      ]
+    }
+  ]
+}

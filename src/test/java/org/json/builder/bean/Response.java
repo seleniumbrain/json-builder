@@ -1,4 +1,4 @@
-package org.json.builder;
+package org.json.builder.bean;
 
 import java.util.List;
 

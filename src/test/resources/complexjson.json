@@ -1,0 +1,96 @@
+{
+  "name": "Alice",
+  "age": 30,
+  "address": {
+    "street": "123 Main St",
+    "city": "Anytown",
+    "state": "CA",
+    "zip": "12345"
+  },
+  "customs": [
+    "reading",
+    "coding",
+    "hiking"
+  ],
+  "friends": [
+    {
+      "name": "Bob",
+      "age": 27,
+      "hobbies": [
+        "gaming",
+        "music"
+      ],
+      "pets": [
+        {
+          "name": "Fluffy",
+          "species": "cat"
+        },
+        {
+          "name": "Buddy",
+          "species": "dog"
+        }
+      ]
+    },
+    {
+      "name": "john",
+      "age": 30,
+      "hobbies": [
+        "gaming",
+        "music"
+      ],
+      "pets": [
+        {
+          "name": "Fluffy",
+          "species": "cat"
+        },
+        {
+          "name": "Buddy",
+          "species": "dog"
+        }
+      ]
+    }
+  ],
+  "work": {
+    "company": "TechCorp",
+    "position": "Software Engineer",
+    "projects": [
+      {
+        "name": "Project A",
+        "team": [
+          "Alice",
+          "Bob"
+        ],
+        "tasks": [
+          {
+            "description": "Task 1",
+            "status": "completed"
+          },
+          {
+            "description": "Task 2",
+            "status": "in progress"
+          },
+          {
+            "description": "Task 3",
+            "status": "pending"
+          }
+        ]
+      },
+      {
+        "name": "Project B",
+        "team": [
+          "Alice",
+          "Charlie"
+        ],
+        "tasks": [
+          {
+            "description": "Task 3",
+            "status": "pending"
+          }
+        ]
+      }
+    ]
+  },
+  "rooms": [],
+  "vehicles": {},
+  "bags": null
+}

@@ -1,4 +1,4 @@
-package org.json.builder;
+package org.json.builder.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Person {
-    private String name;
-    private int age;
+public class Address{
+	private String zipcode;
+	private String city;
+	private String street;
 }
