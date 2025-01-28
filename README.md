@@ -14,7 +14,7 @@ To include this project in your Maven build, add the following dependency to you
 <dependency>
     <groupId>org.json.builder</groupId>
     <artifactId>json-builder</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 > [!IMPORTANT]
