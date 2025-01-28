@@ -4,7 +4,7 @@
 
     <groupId>io.github.seleniumbrain</groupId>
     <artifactId>json-builder</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>JsonBuilder</name>
@@ -127,44 +127,44 @@
                 <version>3.11.0</version>
             </plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <relocations>
-                                <relocation>
-                                    <pattern>com.fasterxml.jackson</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.com.fasterxml.jackson</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.projectlombok</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.org.projectlombok</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.apache.commons</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.org.apache.commons</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>org.slf4j</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.org.slf4j</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>commons-io</pattern>
-                                    <shadedPattern>io.github.seleniumbrain.shaded.commons-io</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <version>3.4.1</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <createDependencyReducedPom>false</createDependencyReducedPom>-->
+<!--                            <relocations>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>com.fasterxml.jackson</pattern>-->
+<!--                                    <shadedPattern>io.github.seleniumbrain.shaded.com.fasterxml.jackson</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>org.projectlombok</pattern>-->
+<!--                                    <shadedPattern>io.github.seleniumbrain.shaded.org.projectlombok</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>org.apache.commons</pattern>-->
+<!--                                    <shadedPattern>io.github.seleniumbrain.shaded.org.apache.commons</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>org.slf4j</pattern>-->
+<!--                                    <shadedPattern>io.github.seleniumbrain.shaded.org.slf4j</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                                <relocation>-->
+<!--                                    <pattern>commons-io</pattern>-->
+<!--                                    <shadedPattern>io.github.seleniumbrain.shaded.commons-io</shadedPattern>-->
+<!--                                </relocation>-->
+<!--                            </relocations>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
 
             <!--            test execution plugin -->
             <plugin>
